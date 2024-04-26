@@ -1,36 +1,35 @@
 import streamlit as st
-from streamlit_shared.state import get_state
 from datetime import datetime
 
-# Initialize shared state
-state = get_state(my_message="", other_message="", chat_history=[])
+# Initialize empty lists to store messages
+chat_history_user1 = []
+chat_history_user2 = []
 
 # Sidebar to enter usernames
 with st.sidebar:
-    my_username = st.text_input("Your Username", "User 1")
-    other_username = st.text_input("Other Username", "User 2")
+    user1 = st.text_input("User 1", "User 1")
+    user2 = st.text_input("User 2", "User 2")
 
 # Main chat interface
 st.title("Chat Room")
 
-# Display chat history
-if state.chat_history:
-    for chat in state.chat_history:
-        st.write(f"{chat['timestamp']} - {chat['username']}: {chat['message']}")
+# Text area to display chat history for User 1
+st.subheader(f"Chat History for {user1}:")
+for chat in chat_history_user1:
+    st.write(f"{chat['timestamp']} - {chat['user']}: {chat['message']}")
+
+# Text area to display chat history for User 2
+st.subheader(f"Chat History for {user2}:")
+for chat in chat_history_user2:
+    st.write(f"{chat['timestamp']} - {chat['user']}: {chat['message']}")
 
 # Text input for entering new message
-new_message = st.text_input("Enter Message")
+new_message = st.text_input("Enter Message:")
 
 # Button to send message
 if st.button("Send"):
     if new_message:
         timestamp = datetime.now().strftime("%H:%M:%S")
-        state.chat_history.append({"timestamp": timestamp, "username": my_username, "message": new_message})
+        chat_history_user1.append({"timestamp": timestamp, "user": user1, "message": new_message})
+        chat_history_user2.append({"timestamp": timestamp, "user": user2, "message": new_message})
 
-# Display other user's message
-if state.other_message:
-    st.write(f"{state.other_message['timestamp']} - {state.other_message['username']}: {state.other_message['message']}")
-
-# Update other user's message
-if st.checkbox("Update Other User's Message"):
-    state.other_message = {"timestamp": datetime.now().strftime("%H:%M:%S"), "username": other_username, "message": new_message}
